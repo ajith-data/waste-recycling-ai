@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Upload, BarChart3, Recycle, Clock, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Prediction {
   id: string;
@@ -28,6 +29,7 @@ export default function Dashboard() {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     fetchPredictions();
@@ -65,9 +67,9 @@ export default function Dashboard() {
     : "N/A";
 
   const stats = [
-    { label: "Total Uploads", value: totalUploads, icon: Upload },
-    { label: "Most Common", value: mostCommon, icon: Recycle },
-    { label: "Avg Confidence", value: `${avgConfidence}%`, icon: BarChart3 },
+    { label: t("dashboard.totalUploads"), value: totalUploads, icon: Upload },
+    { label: t("dashboard.mostCommon"), value: mostCommon, icon: Recycle },
+    { label: t("dashboard.avgConfidence"), value: `${avgConfidence}%`, icon: BarChart3 },
   ];
 
   return (
@@ -75,12 +77,12 @@ export default function Dashboard() {
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="font-display text-3xl font-bold">Dashboard</h1>
-            <p className="text-muted-foreground">Your recycling activity overview</p>
+            <h1 className="font-display text-3xl font-bold">{t("dashboard.title")}</h1>
+            <p className="text-muted-foreground">{t("dashboard.subtitle")}</p>
           </div>
           <Link to="/upload">
             <Button className="eco-gradient text-primary-foreground gap-2">
-              <Upload className="h-4 w-4" /> New Upload
+              <Upload className="h-4 w-4" /> {t("dashboard.newUpload")}
             </Button>
           </Link>
         </div>
@@ -104,17 +106,17 @@ export default function Dashboard() {
         <div className="bg-card rounded-xl border border-border overflow-hidden">
           <div className="p-5 border-b border-border flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
-            <h2 className="font-display font-semibold text-lg">Prediction History</h2>
+            <h2 className="font-display font-semibold text-lg">{t("dashboard.history")}</h2>
           </div>
           {loading ? (
-            <div className="p-12 text-center text-muted-foreground">Loading...</div>
+            <div className="p-12 text-center text-muted-foreground">{t("dashboard.loading")}</div>
           ) : predictions.length === 0 ? (
             <div className="p-12 text-center">
               <Recycle className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-              <p className="text-muted-foreground">No predictions yet. Upload your first image!</p>
+              <p className="text-muted-foreground">{t("dashboard.noHistory")}</p>
               <Link to="/upload">
                 <Button className="mt-4 eco-gradient text-primary-foreground gap-2">
-                  <Upload className="h-4 w-4" /> Upload Image
+                  <Upload className="h-4 w-4" /> {t("dashboard.uploadImage")}
                 </Button>
               </Link>
             </div>
