@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Upload as UploadIcon, Loader2, Recycle, Trash2, Leaf, Zap, Info } from "lucide-react";
+import { Upload as UploadIcon, Loader2, Recycle, Trash2, Leaf, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Chatbot from "@/components/Chatbot";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -37,11 +37,11 @@ export default function UploadPage() {
     const f = e.target.files?.[0];
     if (!f) return;
     if (!f.type.startsWith("image/")) {
-      toast({ title: "Please upload an image file", variant: "destructive" });
+      toast({ title: t("upload.imageError"), variant: "destructive" });
       return;
     }
     if (f.size > 10 * 1024 * 1024) {
-      toast({ title: "File too large (max 10MB)", variant: "destructive" });
+      toast({ title: t("upload.sizeError"), variant: "destructive" });
       return;
     }
     setFile(f);
@@ -49,7 +49,7 @@ export default function UploadPage() {
     const reader = new FileReader();
     reader.onload = () => setPreview(reader.result as string);
     reader.readAsDataURL(f);
-  }, [toast]);
+  }, [toast, t]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -99,7 +99,7 @@ export default function UploadPage() {
       });
     } catch (err: any) {
       console.error(err);
-      toast({ title: "Analysis failed", description: err.message, variant: "destructive" });
+      toast({ title: t("upload.analysisFailed"), description: err.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -139,9 +139,9 @@ export default function UploadPage() {
               {/* Image Preview */}
               <div className="bg-card rounded-2xl border border-border overflow-hidden">
                 <div className="p-4 border-b border-border flex justify-between items-center">
-                  <span className="font-medium text-sm">Uploaded Image</span>
+                  <span className="font-medium text-sm">{t("upload.uploadedImage")}</span>
                   <Button variant="ghost" size="sm" onClick={reset} className="gap-1 text-muted-foreground">
-                    <Trash2 className="h-3.5 w-3.5" /> Clear
+                    <Trash2 className="h-3.5 w-3.5" /> {t("upload.clear")}
                   </Button>
                 </div>
                 <div className="p-4">
@@ -161,7 +161,7 @@ export default function UploadPage() {
               {result ? (
                 <div className="bg-card rounded-2xl border border-border overflow-hidden animate-slide-up">
                   <div className="p-4 border-b border-border">
-                    <span className="font-medium text-sm">Classification Result</span>
+                    <span className="font-medium text-sm">{t("upload.result")}</span>
                   </div>
                   <div className="p-5 space-y-4">
                     <div className="flex items-center gap-3">
@@ -170,25 +170,25 @@ export default function UploadPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-accent rounded-xl p-3">
-                        <p className="text-xs text-muted-foreground mb-1">Confidence</p>
+                        <p className="text-xs text-muted-foreground mb-1">{t("upload.confidence")}</p>
                         <p className="font-display font-bold text-lg text-primary">{result.confidence_score}%</p>
                       </div>
                       <div className="bg-accent rounded-xl p-3">
-                        <p className="text-xs text-muted-foreground mb-1">Recycling Bin</p>
+                        <p className="text-xs text-muted-foreground mb-1">{t("upload.recyclingBin")}</p>
                         <p className="font-display font-bold text-lg">{result.recycling_bin}</p>
                       </div>
                     </div>
                     <div className="bg-accent rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Leaf className="h-4 w-4 text-primary" />
-                        <span className="font-medium text-sm">Environmental Impact</span>
+                        <span className="font-medium text-sm">{t("upload.envImpact")}</span>
                       </div>
                       <p className="text-sm text-muted-foreground">{result.environmental_impact}</p>
                     </div>
                     <div className="bg-accent rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Recycle className="h-4 w-4 text-primary" />
-                        <span className="font-medium text-sm">Sustainability Tips</span>
+                        <span className="font-medium text-sm">{t("upload.sustainTips")}</span>
                       </div>
                       <ul className="space-y-1.5">
                         {result.sustainability_tips.map((tip, i) => (
@@ -210,18 +210,12 @@ export default function UploadPage() {
               ) : null}
             </div>
 
-            {/* Chatbot below results */}
-            {result && (
-              <Chatbot
-                initialContext={result.explanation}
-              />
-            )}
+            {result && <Chatbot initialContext={result.explanation} />}
 
-            {/* Analyze another */}
             {result && (
               <div className="text-center">
                 <Button variant="outline" onClick={reset} className="gap-2">
-                  <UploadIcon className="h-4 w-4" /> Analyze Another Image
+                  <UploadIcon className="h-4 w-4" /> {t("upload.analyzeAnother")}
                 </Button>
               </div>
             )}
