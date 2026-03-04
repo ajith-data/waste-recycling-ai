@@ -3,11 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Recycle, Upload, LayoutDashboard, LogOut, Menu, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
+import LanguageSelector from "@/components/LanguageSelector";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Navbar({ user }: { user: any }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { t } = useLanguage();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -16,8 +19,8 @@ export default function Navbar({ user }: { user: any }) {
 
   const navLinks = user
     ? [
-        { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { to: "/upload", label: "Upload", icon: Upload },
+        { to: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard },
+        { to: "/upload", label: t("nav.upload"), icon: Upload },
       ]
     : [];
 
@@ -37,25 +40,22 @@ export default function Navbar({ user }: { user: any }) {
         <div className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link key={link.to} to={link.to}>
-              <Button
-                variant={isActive(link.to) ? "default" : "ghost"}
-                size="sm"
-                className="gap-2"
-              >
+              <Button variant={isActive(link.to) ? "default" : "ghost"} size="sm" className="gap-2">
                 <link.icon className="h-4 w-4" />
                 {link.label}
               </Button>
             </Link>
           ))}
+          <LanguageSelector />
           {user ? (
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2 ml-2">
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2 ml-1">
               <LogOut className="h-4 w-4" />
-              Logout
+              {t("nav.logout")}
             </Button>
           ) : (
             <Link to="/login">
               <Button size="sm" className="eco-gradient text-primary-foreground ml-2">
-                Get Started
+                {t("nav.getStarted")}
               </Button>
             </Link>
           )}
@@ -78,14 +78,17 @@ export default function Navbar({ user }: { user: any }) {
               </Button>
             </Link>
           ))}
+          <div className="py-1">
+            <LanguageSelector />
+          </div>
           {user ? (
             <Button variant="ghost" className="w-full justify-start gap-2" onClick={handleLogout}>
               <LogOut className="h-4 w-4" />
-              Logout
+              {t("nav.logout")}
             </Button>
           ) : (
             <Link to="/login" onClick={() => setMobileOpen(false)}>
-              <Button className="w-full eco-gradient text-primary-foreground">Get Started</Button>
+              <Button className="w-full eco-gradient text-primary-foreground">{t("nav.getStarted")}</Button>
             </Link>
           )}
         </div>

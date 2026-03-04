@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Upload as UploadIcon, Loader2, Recycle, Trash2, Leaf, Zap, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import Chatbot from "@/components/Chatbot";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const binColors: Record<string, string> = {
   Plastic: "bg-blue-500",
@@ -29,6 +31,7 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PredictionResult | null>(null);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -67,7 +70,6 @@ export default function UploadPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Upload image
       const ext = file.name.split(".").pop();
       const path = `${user.id}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from("waste-images").upload(path, file);
@@ -75,7 +77,6 @@ export default function UploadPage() {
 
       const { data: { publicUrl } } = supabase.storage.from("waste-images").getPublicUrl(path);
 
-      // Call AI edge function
       const { data, error } = await supabase.functions.invoke("classify-waste", {
         body: { imageBase64: preview, imageUrl: publicUrl },
       });
@@ -84,7 +85,6 @@ export default function UploadPage() {
       const prediction: PredictionResult = data;
       setResult(prediction);
 
-      // Save to history
       await supabase.from("predictions").insert({
         user_id: user.id,
         image_url: publicUrl,
@@ -115,8 +115,8 @@ export default function UploadPage() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="text-center mb-8">
-          <h1 className="font-display text-3xl font-bold mb-2">Analyze Waste</h1>
-          <p className="text-muted-foreground">Upload an image and our AI will classify it instantly</p>
+          <h1 className="font-display text-3xl font-bold mb-2">{t("upload.title")}</h1>
+          <p className="text-muted-foreground">{t("upload.subtitle")}</p>
         </div>
 
         {!preview ? (
@@ -130,12 +130,11 @@ export default function UploadPage() {
             <div className="eco-gradient w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <UploadIcon className="h-8 w-8 text-primary-foreground" />
             </div>
-            <p className="font-display font-semibold text-lg mb-1">Drop your image here</p>
-            <p className="text-muted-foreground text-sm">or click to browse • JPG, PNG, WebP up to 10MB</p>
+            <p className="font-display font-semibold text-lg mb-1">{t("upload.drop")}</p>
+            <p className="text-muted-foreground text-sm">JPG, PNG, WebP — max 10MB</p>
           </div>
         ) : (
           <div className="space-y-6 animate-fade-in">
-            {/* Image + Result Grid */}
             <div className="grid md:grid-cols-2 gap-6">
               {/* Image Preview */}
               <div className="bg-card rounded-2xl border border-border overflow-hidden">
@@ -152,7 +151,7 @@ export default function UploadPage() {
                   <div className="p-4 pt-0">
                     <Button onClick={handleAnalyze} disabled={loading} className="w-full eco-gradient text-primary-foreground gap-2">
                       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
-                      {loading ? "Analyzing..." : "Analyze Image"}
+                      {loading ? t("upload.analyzing") : t("upload.analyze")}
                     </Button>
                   </div>
                 )}
@@ -169,7 +168,6 @@ export default function UploadPage() {
                       <span className={`w-4 h-4 rounded-full ${binColors[result.predicted_class] || "bg-primary"}`} />
                       <span className="font-display font-bold text-2xl">{result.predicted_class}</span>
                     </div>
-
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-accent rounded-xl p-3">
                         <p className="text-xs text-muted-foreground mb-1">Confidence</p>
@@ -180,7 +178,6 @@ export default function UploadPage() {
                         <p className="font-display font-bold text-lg">{result.recycling_bin}</p>
                       </div>
                     </div>
-
                     <div className="bg-accent rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Leaf className="h-4 w-4 text-primary" />
@@ -188,7 +185,6 @@ export default function UploadPage() {
                       </div>
                       <p className="text-sm text-muted-foreground">{result.environmental_impact}</p>
                     </div>
-
                     <div className="bg-accent rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Recycle className="h-4 w-4 text-primary" />
@@ -208,26 +204,25 @@ export default function UploadPage() {
                 <div className="bg-card rounded-2xl border border-border flex items-center justify-center p-12">
                   <div className="text-center">
                     <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto mb-3" />
-                    <p className="font-medium">Analyzing your image...</p>
-                    <p className="text-sm text-muted-foreground">Our AI is classifying the waste type</p>
+                    <p className="font-medium">{t("upload.analyzing")}</p>
                   </div>
                 </div>
               ) : null}
             </div>
 
-            {/* AI Explanation */}
+            {/* Chatbot below results */}
             {result && (
-              <div className="bg-card rounded-2xl border border-border p-6 animate-slide-up" style={{ animationDelay: "200ms" }}>
-                <div className="flex items-center gap-2 mb-3">
-                  <Info className="h-5 w-5 text-primary" />
-                  <h3 className="font-display font-semibold text-lg">AI Explanation</h3>
-                </div>
-                <p className="text-muted-foreground leading-relaxed">{result.explanation}</p>
-                <div className="mt-4">
-                  <Button variant="outline" onClick={reset} className="gap-2">
-                    <UploadIcon className="h-4 w-4" /> Analyze Another Image
-                  </Button>
-                </div>
+              <Chatbot
+                initialContext={result.explanation}
+              />
+            )}
+
+            {/* Analyze another */}
+            {result && (
+              <div className="text-center">
+                <Button variant="outline" onClick={reset} className="gap-2">
+                  <UploadIcon className="h-4 w-4" /> Analyze Another Image
+                </Button>
               </div>
             )}
           </div>
