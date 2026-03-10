@@ -136,6 +136,17 @@ const translations: Record<string, T15> = {
   "register.success": t15("Account created!","¡Cuenta creada!","Compte créé !","Konto erstellt!","Conta criada!","खाता बनाया गया!","账户已创建！","アカウント作成完了！","계정이 생성되었습니다!","تم إنشاء الحساب!","Аккаунт создан!","Account creato!","Account aangemaakt!","Hesap oluşturuldu!","Akun dibuat!"),
   "register.canSignIn": t15("You can now sign in.","Ahora puedes iniciar sesión.","Vous pouvez maintenant vous connecter.","Sie können sich jetzt anmelden.","Agora você pode entrar.","अब आप साइन इन कर सकते हैं।","您现在可以登录了。","サインインできます。","이제 로그인할 수 있습니다.","يمكنك الآن تسجيل الدخول.","Теперь вы можете войти.","Ora puoi accedere.","Je kunt nu inloggen.","Artık giriş yapabilirsiniz.","Anda sekarang bisa masuk."),
   "register.failed": t15("Registration failed","Registro fallido","Échec de l'inscription","Registrierung fehlgeschlagen","Registro falhou","पंजीकरण विफल","注册失败","登録に失敗","등록 실패","فشل التسجيل","Регистрация не удалась","Registrazione fallita","Registratie mislukt","Kayıt başarısız","Pendaftaran gagal"),
+
+  // Home logged-in
+  "home.welcomeBack": t15("Welcome back","Bienvenido de nuevo","Bon retour","Willkommen zurück","Bem-vindo de volta","वापसी पर स्वागत","欢迎回来","おかえりなさい","돌아오신 것을 환영합니다","مرحباً بعودتك","С возвращением","Bentornato","Welkom terug","Tekrar hoş geldiniz","Selamat datang kembali"),
+  "home.scanWaste": t15("Scan Waste Now","Escanear Residuos","Scanner les Déchets","Abfall Scannen","Escanear Resíduos","कचरा स्कैन करें","扫描废物","廃棄物をスキャン","폐기물 스캔","مسح النفايات","Сканировать отходы","Scansiona Rifiuti","Afval Scannen","Atık Tara","Pindai Sampah"),
+  "home.viewDashboard": t15("View Dashboard","Ver Panel","Voir le Tableau","Dashboard Ansehen","Ver Painel","डैशबोर्ड देखें","查看仪表板","ダッシュボード","대시보드 보기","عرض اللوحة","Открыть панель","Vedi Pannello","Dashboard Bekijken","Paneli Görüntüle","Lihat Dasbor"),
+  "home.tryNow": t15("Try now","Probar ahora","Essayer","Jetzt testen","Experimentar","अभी आज़माएं","立即尝试","今すぐ試す","지금 사용","جرب الآن","Попробовать","Prova ora","Nu proberen","Şimdi dene","Coba sekarang"),
+
+  // Camera
+  "upload.useCamera": t15("Use Camera","Usar Cámara","Utiliser la Caméra","Kamera Verwenden","Usar Câmera","कैमरा उपयोग करें","使用相机","カメラを使用","카메라 사용","استخدم الكاميرا","Использовать камеру","Usa Fotocamera","Camera Gebruiken","Kamera Kullan","Gunakan Kamera"),
+  "upload.capture": t15("Capture","Capturar","Capturer","Aufnehmen","Capturar","कैप्चर","拍摄","撮影","캡처","التقاط","Снять","Cattura","Vastleggen","Yakala","Tangkap"),
+  "upload.cameraError": t15("Camera access denied","Acceso a cámara denegado","Accès caméra refusé","Kamerazugriff verweigert","Acesso à câmera negado","कैमरा एक्सेस अस्वीकृत","相机访问被拒绝","カメラアクセスが拒否されました","카메라 접근 거부","تم رفض الوصول للكاميرا","Доступ к камере запрещён","Accesso fotocamera negato","Camera toegang geweigerd","Kamera erişimi reddedildi","Akses kamera ditolak"),
 };
 
 interface LanguageContextType {

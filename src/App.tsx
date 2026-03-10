@@ -51,7 +51,7 @@ function AppContent() {
     <BrowserRouter>
       <Navbar user={user} />
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<Index user={user} />} />
         <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
         <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
         <Route path="/upload" element={<ProtectedRoute user={user}><Upload /></ProtectedRoute>} />

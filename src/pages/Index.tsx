@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Recycle, Leaf, Brain, BarChart3, Globe, Upload } from "lucide-react";
+import { Recycle, Leaf, Brain, BarChart3, Globe, Upload, Camera, User, ArrowRight } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -15,13 +15,13 @@ const wasteTypeKeys = [
 ];
 
 const featureKeys = [
-  { icon: Brain, titleKey: "feature.aiClassification", descKey: "feature.aiClassificationDesc" },
-  { icon: Recycle, titleKey: "feature.recyclingGuidance", descKey: "feature.recyclingGuidanceDesc" },
-  { icon: BarChart3, titleKey: "feature.trackImpact", descKey: "feature.trackImpactDesc" },
-  { icon: Globe, titleKey: "feature.multilingual", descKey: "feature.multilingualDesc" },
+  { icon: Brain, titleKey: "feature.aiClassification", descKey: "feature.aiClassificationDesc", link: "/upload" },
+  { icon: Recycle, titleKey: "feature.recyclingGuidance", descKey: "feature.recyclingGuidanceDesc", link: "/upload" },
+  { icon: BarChart3, titleKey: "feature.trackImpact", descKey: "feature.trackImpactDesc", link: "/dashboard" },
+  { icon: Globe, titleKey: "feature.multilingual", descKey: "feature.multilingualDesc", link: null },
 ];
 
-export default function Index() {
+export default function Index({ user }: { user?: any }) {
   const { t } = useLanguage();
 
   return (
@@ -44,19 +44,47 @@ export default function Index() {
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               {t("home.subtitle")}
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-              <Link to="/register">
-                <Button size="lg" className="eco-gradient text-primary-foreground gap-2 text-base px-8 animate-pulse-glow">
-                  <Upload className="h-5 w-5" />
-                  {t("home.cta")}
-                </Button>
-              </Link>
-              <Link to="/login">
-                <Button size="lg" variant="outline" className="text-base px-8">
-                  {t("home.signIn")}
-                </Button>
-              </Link>
-            </div>
+
+            {user ? (
+              /* Logged-in user: show profile + quick actions */
+              <div className="space-y-4 pt-4">
+                <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full bg-card border border-border">
+                  <div className="eco-gradient w-9 h-9 rounded-full flex items-center justify-center">
+                    <User className="h-4 w-4 text-primary-foreground" />
+                  </div>
+                  <span className="font-medium text-sm">{t("home.welcomeBack")}, {user.email?.split("@")[0]}</span>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Link to="/upload">
+                    <Button size="lg" className="eco-gradient text-primary-foreground gap-2 text-base px-8 animate-pulse-glow">
+                      <Camera className="h-5 w-5" />
+                      {t("home.scanWaste")}
+                    </Button>
+                  </Link>
+                  <Link to="/dashboard">
+                    <Button size="lg" variant="outline" className="text-base px-8 gap-2">
+                      <BarChart3 className="h-5 w-5" />
+                      {t("home.viewDashboard")}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              /* Guest: show sign up / sign in */
+              <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+                <Link to="/register">
+                  <Button size="lg" className="eco-gradient text-primary-foreground gap-2 text-base px-8 animate-pulse-glow">
+                    <Upload className="h-5 w-5" />
+                    {t("home.cta")}
+                  </Button>
+                </Link>
+                <Link to="/login">
+                  <Button size="lg" variant="outline" className="text-base px-8">
+                    {t("home.signIn")}
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -84,15 +112,30 @@ export default function Index() {
             <p className="text-muted-foreground text-lg">{t("home.howItWorksDesc")}</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featureKeys.map((f, i) => (
-              <div key={f.titleKey} className="bg-card rounded-xl border border-border p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
-                <div className="eco-gradient w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-                  <f.icon className="h-6 w-6 text-primary-foreground" />
+            {featureKeys.map((f, i) => {
+              const card = (
+                <div key={f.titleKey} className="bg-card rounded-xl border border-border p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 animate-slide-up group cursor-pointer" style={{ animationDelay: `${i * 100}ms` }}>
+                  <div className="eco-gradient w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                    <f.icon className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                  <h3 className="font-display font-semibold text-lg mb-2">{t(f.titleKey)}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{t(f.descKey)}</p>
+                  {f.link && (
+                    <div className="mt-3 flex items-center gap-1 text-primary text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                      {t("home.tryNow")} <ArrowRight className="h-3.5 w-3.5" />
+                    </div>
+                  )}
                 </div>
-                <h3 className="font-display font-semibold text-lg mb-2">{t(f.titleKey)}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{t(f.descKey)}</p>
-              </div>
-            ))}
+              );
+
+              return f.link ? (
+                <Link key={f.titleKey} to={user ? f.link : "/login"} className="block">
+                  {card}
+                </Link>
+              ) : (
+                card
+              );
+            })}
           </div>
         </div>
       </section>
